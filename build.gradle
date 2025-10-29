@@ -5,7 +5,17 @@ plugins {
 }
 
 def defaultStubSetting = providers.gradleProperty("defaultUseMinecraftStubs").map { it.toBoolean() }.getOrElse(false)
-def useMinecraftStubs = providers.gradleProperty("useMinecraftStubs").map { it.toBoolean() }.getOrElse(defaultStubSetting)
+def configuredStubUsage = providers.gradleProperty("useMinecraftStubs").map { it.toBoolean() }.getOrElse(defaultStubSetting)
+
+def runClientRequested = gradle.startParameter.taskNames.any { taskName ->
+        taskName.tokenize(":").last() == "runClient"
+}
+
+if (runClientRequested && configuredStubUsage) {
+        logger.lifecycle("runClient requested - disabling bundled Minecraft stubs")
+}
+
+def useMinecraftStubs = configuredStubUsage && !runClientRequested
 
 if (!useMinecraftStubs) {
         apply plugin: 'fabric-loom'
