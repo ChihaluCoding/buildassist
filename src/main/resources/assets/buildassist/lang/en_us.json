@@ -1,0 +1,4 @@
+{
+  "text.buildassist.start_point": "Start position set: (%1$s, %2$s, %3$s)",
+  "text.buildassist.distance": "Distance - X: %1$s, Y: %2$s, Z: %3$s, Total: %4$s"
+}
