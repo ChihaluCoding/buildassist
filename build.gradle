@@ -31,6 +31,15 @@ if (useMinecraftStubs) {
                         java.exclude('chihalu/buildassist/mixin/client/**')
                 }
         }
+
+        tasks.register("runClient") {
+                group = "fabric"
+                description = "Stub task shown when attempting to run the client with Minecraft stubs."
+
+                doLast {
+                        throw new org.gradle.api.GradleException("runClient is unavailable when using the bundled Minecraft stubs. Re-run without -PuseMinecraftStubs or set defaultUseMinecraftStubs=false.")
+                }
+        }
 }
 
 repositories {
