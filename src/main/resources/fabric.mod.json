@@ -3,15 +3,11 @@
 	"id": "buildassist",
 	"version": "${version}",
 	"name": "BuildAssist",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "建築の支援を行うModです。",
 	"authors": [
-		"Me!"
+		"chihalu"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/buildassist/icon.png",
 	"environment": "*",
 	"entrypoints": {
