@@ -47,18 +47,18 @@ public class BuildAssist implements ModInitializer {
                 StartPoint startPoint = START_POINTS.get(playerId);
                 if (startPoint == null || !startPoint.dimension.equals(dimension)) {
                         START_POINTS.put(playerId, new StartPoint(clickedPos, dimension));
-                        player.sendMessage(Text.translatable("text.buildassist.start_point", clickedPos.getX(), clickedPos.getY(), clickedPos.getZ()), true);
+                        player.sendMessage(Text.translatable("text.buildassist.start_point"), true);
                         return ActionResult.PASS;
                 }
 
                 BlockPos startPos = startPoint.position;
-                int dx = Math.abs(clickedPos.getX() - startPos.getX());
-                int dy = Math.abs(clickedPos.getY() - startPos.getY());
-                int dz = Math.abs(clickedPos.getZ() - startPos.getZ());
-                int total = dx + dy + dz;
+                int total = Math.abs(clickedPos.getX() - startPos.getX())
+                                + Math.abs(clickedPos.getY() - startPos.getY())
+                                + Math.abs(clickedPos.getZ() - startPos.getZ())
+                                + 1;
 
                 START_POINTS.remove(playerId);
-                player.sendMessage(Text.translatable("text.buildassist.distance", dx, dy, dz, total), true);
+                player.sendMessage(Text.translatable("text.buildassist.block_count", total), true);
                 return ActionResult.PASS;
         }
 

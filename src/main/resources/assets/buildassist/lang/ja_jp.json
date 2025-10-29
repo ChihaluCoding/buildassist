@@ -1,4 +1,4 @@
 {
-  "text.buildassist.start_point": "開始位置を記録しました: (%1$s, %2$s, %3$s)",
-  "text.buildassist.distance": "距離 X:%1$s Y:%2$s Z:%3$s 合計:%4$s"
+  "text.buildassist.start_point": "開始地点が設定されました",
+  "text.buildassist.block_count": "%1$sマス"
 }
