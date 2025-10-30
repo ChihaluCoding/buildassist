@@ -17,6 +17,9 @@
 		"client": [
 			"chihalu.buildassist.BuildAssistClient"
 		],
+		"modmenu": [
+			"chihalu.buildassist.compat.modmenu.BuildAssistModMenuIntegration"
+		],
 		"fabric-datagen": [
 			"chihalu.buildassist.BuildAssistDataGenerator"
 		]

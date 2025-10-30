@@ -32,4 +32,8 @@ public class World {
         public MinecraftServer getServer() {
                 return new MinecraftServer();
         }
+
+        public int getBottomY() {
+                return 0;
+        }
 }

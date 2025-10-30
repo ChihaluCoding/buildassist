@@ -53,6 +53,15 @@ if (useMinecraftStubs) {
 }
 
 repositories {
+        mavenCentral()
+        maven {
+                name = "TerraformersMC"
+                url = "https://maven.terraformersmc.com/releases/"
+        }
+        maven {
+                name = "SpongePowered"
+                url = "https://repo.spongepowered.org/maven/"
+        }
         // Additional repositories for mod dependencies can be declared here when required.
 }
 
@@ -76,6 +85,8 @@ if (!useMinecraftStubs) {
 }
 
 dependencies {
+        implementation "com.google.code.gson:gson:2.10.1"
+        compileOnly "org.spongepowered:mixin:0.8.5"
         if (useMinecraftStubs) {
                 // No external dependencies are required when compiling against the stub classes.
         } else {
@@ -86,6 +97,10 @@ dependencies {
 
                 // Fabric API. This is technically optional, but you probably want it anyway.
                 modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+                // ModMenu integration for configuration UI
+                modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+                modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
         }
 }
 
