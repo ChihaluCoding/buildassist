@@ -58,13 +58,23 @@ public class BuildAssist implements ModInitializer {
 
                 BlockPos startPos = startPoint.position;
                 BlockPos adjustedPos = new BlockPos(clickedPos.getX(), startPos.getY(), clickedPos.getZ());
-                long xCount = Math.abs(adjustedPos.getX() - startPos.getX()) + 1L;
-                long yCount = Math.abs(adjustedPos.getY() - startPos.getY()) + 1L;
-                long zCount = Math.abs(adjustedPos.getZ() - startPos.getZ()) + 1L;
+                long xDiff = Math.abs(adjustedPos.getX() - startPos.getX());
+                long yDiff = Math.abs(adjustedPos.getY() - startPos.getY());
+                long zDiff = Math.abs(adjustedPos.getZ() - startPos.getZ());
+                long xCount = xDiff + 1L;
+                long yCount = yDiff + 1L;
+                long zCount = zDiff + 1L;
                 long total = xCount * yCount * zCount;
 
                 START_POINTS.remove(playerId);
-                player.sendMessage(Text.translatable("text.buildassist.block_count", total), true);
+                if (yDiff == 0 && xDiff == zDiff && xDiff != 0L) {
+                        long diagonalCount = xDiff + 1L;
+                        player.sendMessage(
+                                        Text.translatable("text.buildassist.block_count_diagonal", total, diagonalCount),
+                                        true);
+                } else {
+                        player.sendMessage(Text.translatable("text.buildassist.block_count", total), true);
+                }
                 revertBlockIfTilled(world, clickedPos, originalState);
                 return ActionResult.SUCCESS;
         }
