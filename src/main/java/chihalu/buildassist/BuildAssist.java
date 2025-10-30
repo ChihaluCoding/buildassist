@@ -53,7 +53,7 @@ public class BuildAssist implements ModInitializer {
                         START_POINTS.put(playerId, new StartPoint(clickedPos, dimension));
                         player.sendMessage(Text.translatable("text.buildassist.start_point"), true);
                         revertBlockIfTilled(world, clickedPos, originalState);
-                        return ActionResult.PASS;
+                        return ActionResult.SUCCESS;
                 }
 
                 BlockPos startPos = startPoint.position;
