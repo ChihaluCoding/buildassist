@@ -9,7 +9,7 @@
   "text.buildassist.config.display_location.chat": "チャット",
   "text.buildassist.config.overlay_range": "オーバーレイ範囲: %sマス",
   "text.buildassist.config.overlay_highlight_color": "ハイライト色: %s",
-  "text.buildassist.config.overlay_highlight_interval": "%sマスごとにハイライト",
+  "text.buildassist.config.overlay_highlight_interval": "中心から%sマスごとにハイライト",
   "text.buildassist.config.overlay_highlight_color.red": "赤",
   "text.buildassist.config.overlay_highlight_color.blue": "青",
   "text.buildassist.config.overlay_highlight_color.green": "緑",
@@ -23,6 +23,6 @@
   "text.buildassist.config.overlay_style.cross_plane": "十字平面",
   "text.buildassist.config.overlay_style.square_ring": "四角形リング",
   "text.buildassist.config.overlay_style.column": "縦の列",
-  "text.buildassist.config.overlay_highlight_origin.include": "中央もハイライト",
-  "text.buildassist.config.overlay_highlight_origin.exclude": "中央はハイライトしない"
+  "text.buildassist.config.overlay_highlight_origin.include": "中央を起点にカウント (中央もハイライト)",
+  "text.buildassist.config.overlay_highlight_origin.exclude": "中央の1マス先からカウント"
 }

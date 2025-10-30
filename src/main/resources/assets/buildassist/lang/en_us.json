@@ -9,7 +9,7 @@
   "text.buildassist.config.display_location.chat": "Chat",
   "text.buildassist.config.overlay_range": "Overlay range: %s blocks",
   "text.buildassist.config.overlay_highlight_color": "Highlight color: %s",
-  "text.buildassist.config.overlay_highlight_interval": "Highlight every: %s blocks",
+  "text.buildassist.config.overlay_highlight_interval": "Highlight every %s blocks from center",
   "text.buildassist.config.overlay_highlight_color.red": "Red",
   "text.buildassist.config.overlay_highlight_color.blue": "Blue",
   "text.buildassist.config.overlay_highlight_color.green": "Green",
@@ -23,6 +23,6 @@
   "text.buildassist.config.overlay_style.cross_plane": "Planar cross",
   "text.buildassist.config.overlay_style.square_ring": "Square ring",
   "text.buildassist.config.overlay_style.column": "Column",
-  "text.buildassist.config.overlay_highlight_origin.include": "Highlight includes center",
-  "text.buildassist.config.overlay_highlight_origin.exclude": "Highlight skips center"
+  "text.buildassist.config.overlay_highlight_origin.include": "Count from center (highlight center)",
+  "text.buildassist.config.overlay_highlight_origin.exclude": "Start counting one block away from center"
 }

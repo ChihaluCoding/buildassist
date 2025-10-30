@@ -76,6 +76,7 @@ public class BuildAssistConfigScreen extends Screen {
                         BuildAssistConfig.setOverlayStyle(next);
                         BuildAssistConfig.save();
                         button.setMessage(currentOverlayStyleLabel());
+                        this.highlightColorButton.setMessage(currentHighlightColorLabel());
                 }).dimensions(centerX - BUTTON_WIDTH / 2, currentY, BUTTON_WIDTH, BUTTON_HEIGHT).build();
                 this.addDrawableChild(this.overlayStyleButton);
 

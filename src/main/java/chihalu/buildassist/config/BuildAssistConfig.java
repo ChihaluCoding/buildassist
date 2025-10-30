@@ -14,6 +14,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.particle.ParticleEffect;
 
 /**
  * Handles persistence of user configurable settings for BuildAssist.
@@ -46,6 +47,7 @@ public final class BuildAssistConfig {
                         return;
                 }
 
+                boolean highlightColorAdjusted = false;
                 try (Reader reader = new BufferedReader(Files.newBufferedReader(configPath))) {
                         BuildAssistConfig loaded = GSON.fromJson(reader, BuildAssistConfig.class);
                         if (loaded != null) {
@@ -68,9 +70,20 @@ public final class BuildAssistConfig {
                                 if (loaded.overlayHighlightColor != null) {
                                         INSTANCE.overlayHighlightColor = loaded.overlayHighlightColor;
                                 }
+                                OverlayHighlightColor adjusted = ensureCompatibleHighlightColor(
+                                                INSTANCE.overlayHighlightColor);
+                                if (adjusted != INSTANCE.overlayHighlightColor) {
+                                        INSTANCE.overlayHighlightColor = adjusted;
+                                        highlightColorAdjusted = true;
+                                }
                         }
                 } catch (IOException | JsonSyntaxException ex) {
                         BuildAssistConfig.save(); // reset to defaults if load fails
+                        return;
+                }
+
+                if (highlightColorAdjusted) {
+                        save();
                 }
         }
 
@@ -119,6 +132,7 @@ public final class BuildAssistConfig {
 
         public static void setOverlayStyle(OverlayStyle style) {
                 INSTANCE.overlayStyle = Objects.requireNonNull(style, "style");
+                INSTANCE.overlayHighlightColor = ensureCompatibleHighlightColor(INSTANCE.overlayHighlightColor);
         }
 
         public static int getOverlayHighlightInterval() {
@@ -142,7 +156,7 @@ public final class BuildAssistConfig {
         }
 
         public static void setOverlayHighlightColor(OverlayHighlightColor color) {
-                INSTANCE.overlayHighlightColor = Objects.requireNonNull(color, "color");
+                INSTANCE.overlayHighlightColor = ensureCompatibleHighlightColor(Objects.requireNonNull(color, "color"));
         }
 
         private static int clampRange(int range) {
@@ -155,5 +169,18 @@ public final class BuildAssistConfig {
 
         private static Path resolveConfigPath() {
                 return FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILE_NAME);
+        }
+
+        private static OverlayHighlightColor ensureCompatibleHighlightColor(OverlayHighlightColor requested) {
+                OverlayHighlightColor desired = (requested != null) ? requested : OverlayHighlightColor.RED;
+                ParticleEffect baseEffect = INSTANCE.overlayStyle.getBaseEffect();
+                if (desired.getParticleEffect() == baseEffect) {
+                        for (OverlayHighlightColor candidate : OverlayHighlightColor.values()) {
+                                if (candidate.getParticleEffect() != baseEffect) {
+                                        return candidate;
+                                }
+                        }
+                }
+                return desired;
         }
 }
