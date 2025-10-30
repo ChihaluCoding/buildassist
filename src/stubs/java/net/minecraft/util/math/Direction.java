@@ -7,4 +7,10 @@ public enum Direction {
         SOUTH,
         WEST,
         EAST;
+
+        public enum Axis {
+                X,
+                Y,
+                Z;
+        }
 }

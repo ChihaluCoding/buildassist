@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
@@ -25,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.Heightmap;
+import net.minecraft.util.shape.VoxelShape;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +136,7 @@ public class BuildAssist implements ModInitializer {
                 ParticleEffect originEffect = includeOrigin ? highlightEffect : baseEffect;
                 spawnOverlayAt(world, player, origin.getX(), origin.getY(), origin.getZ(), originEffect, style);
                 for (int step = 1; step <= range; step++) {
-                        ParticleEffect effect = (step % interval == 0) ? highlightEffect : baseEffect;
+                        ParticleEffect effect = shouldHighlight(step, interval, includeOrigin) ? highlightEffect : baseEffect;
                         spawnOverlayAt(world, player, origin.getX() + step, origin.getY(), origin.getZ(), effect, style);
                         spawnOverlayAt(world, player, origin.getX() - step, origin.getY(), origin.getZ(), effect, style);
                         spawnOverlayAt(world, player, origin.getX(), origin.getY(), origin.getZ() + step, effect, style);
@@ -144,22 +146,40 @@ public class BuildAssist implements ModInitializer {
 
         private static void spawnOverlayAt(ServerWorld world, ServerPlayerEntity player, int x, int baseY, int z,
                         ParticleEffect effect, OverlayStyle style) {
-                int surfaceY = resolveSurfaceY(world, x, baseY, z);
+                double surfaceHeight = resolveSurfaceHeight(world, x, baseY, z);
                 double baseX = x + 0.5;
-                double baseYPos = surfaceY + 1.02;
+                double baseYPos = surfaceHeight + 0.02;
                 double baseZ = z + 0.5;
                 for (OverlayStyle.Offset offset : style.getOffsets()) {
                         emitParticle(world, player, baseX + offset.x(), baseYPos + offset.y(), baseZ + offset.z(), effect);
                 }
         }
 
-        private static int resolveSurfaceY(ServerWorld world, int x, int fallbackY, int z) {
+        private static boolean shouldHighlight(int step, int interval, boolean includeOrigin) {
+                int countedFromStart = includeOrigin ? step : step - 1;
+                if (countedFromStart <= 0) {
+                        return false;
+                }
+                return countedFromStart % interval == 0;
+        }
+
+        private static double resolveSurfaceHeight(ServerWorld world, int x, int fallbackY, int z) {
                 int topY = world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z) - 1;
                 int bottomY = world.getBottomY();
-                if (topY < bottomY) {
-                        return fallbackY;
+                int surfaceY = (topY < bottomY) ? fallbackY : topY;
+                BlockPos surfacePos = new BlockPos(x, surfaceY, z);
+                return computeBlockTop(world, surfacePos);
+        }
+
+        private static double computeBlockTop(ServerWorld world, BlockPos surfacePos) {
+                BlockState state = world.getBlockState(surfacePos);
+                ShapeContext shapeContext = ShapeContext.absent();
+                VoxelShape shape = state.getCollisionShape(world, surfacePos, shapeContext);
+                if (shape.isEmpty()) {
+                        shape = state.getOutlineShape(world, surfacePos, shapeContext);
                 }
-                return Math.max(fallbackY, topY);
+                double localTop = shape.isEmpty() ? 1.0 : shape.getMax(Direction.Axis.Y);
+                return surfacePos.getY() + localTop;
         }
 
         private static void emitParticle(ServerWorld world, ServerPlayerEntity player, double x, double y, double z,
