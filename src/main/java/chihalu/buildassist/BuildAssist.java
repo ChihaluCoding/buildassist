@@ -6,8 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -41,6 +44,7 @@ public class BuildAssist implements ModInitializer {
                 }
 
                 BlockPos clickedPos = hitResult.getBlockPos();
+                BlockState originalState = world.getBlockState(clickedPos);
                 UUID playerId = player.getUuid();
                 RegistryKey<World> dimension = world.getRegistryKey();
 
@@ -48,20 +52,35 @@ public class BuildAssist implements ModInitializer {
                 if (startPoint == null || !startPoint.dimension.equals(dimension)) {
                         START_POINTS.put(playerId, new StartPoint(clickedPos, dimension));
                         player.sendMessage(Text.translatable("text.buildassist.start_point"), true);
+                        revertBlockIfTilled(world, clickedPos, originalState);
                         return ActionResult.PASS;
                 }
 
                 BlockPos startPos = startPoint.position;
-                int total = Math.abs(clickedPos.getX() - startPos.getX())
-                                + Math.abs(clickedPos.getY() - startPos.getY())
-                                + Math.abs(clickedPos.getZ() - startPos.getZ())
-                                + 1;
+                long xCount = Math.abs(clickedPos.getX() - startPos.getX()) + 1L;
+                long yCount = Math.abs(clickedPos.getY() - startPos.getY()) + 1L;
+                long zCount = Math.abs(clickedPos.getZ() - startPos.getZ()) + 1L;
+                long total = xCount * yCount * zCount;
 
                 START_POINTS.remove(playerId);
                 player.sendMessage(Text.translatable("text.buildassist.block_count", total), true);
+                revertBlockIfTilled(world, clickedPos, originalState);
                 return ActionResult.PASS;
         }
 
         private record StartPoint(BlockPos position, RegistryKey<World> dimension) {
+        }
+
+        private static void revertBlockIfTilled(World world, BlockPos clickedPos, BlockState originalState) {
+                if (!(world instanceof ServerWorld serverWorld)) {
+                        return;
+                }
+
+                serverWorld.getServer().execute(() -> {
+                        if (serverWorld.getBlockState(clickedPos).isOf(Blocks.FARMLAND)
+                                        && !originalState.isOf(Blocks.FARMLAND)) {
+                                serverWorld.setBlockState(clickedPos, originalState);
+                        }
+                });
         }
 }

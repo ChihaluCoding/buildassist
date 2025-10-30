@@ -1,6 +1,9 @@
 package net.minecraft.world;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Simplified world implementation for offline builds.
@@ -20,5 +23,13 @@ public class World {
 
         public RegistryKey<World> getRegistryKey() {
                 return registryKey;
+        }
+
+        public BlockState getBlockState(BlockPos pos) {
+                return new BlockState();
+        }
+
+        public MinecraftServer getServer() {
+                return new MinecraftServer();
         }
 }
