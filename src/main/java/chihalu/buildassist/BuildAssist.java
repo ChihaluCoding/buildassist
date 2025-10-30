@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
@@ -14,8 +14,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import org.slf4j.Logger;
@@ -30,11 +30,12 @@ public class BuildAssist implements ModInitializer {
 
         @Override
         public void onInitialize() {
-                UseBlockCallback.EVENT.register(BuildAssist::handleBlockUse);
+                AttackBlockCallback.EVENT.register(BuildAssist::handleBlockAttack);
                 LOGGER.info("BuildAssist initialized");
         }
 
-        private static ActionResult handleBlockUse(net.minecraft.entity.player.PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        private static ActionResult handleBlockAttack(net.minecraft.entity.player.PlayerEntity player, World world, Hand hand,
+                        BlockPos clickedPos, Direction direction) {
                 if (world.isClient()) {
                         return ActionResult.PASS;
                 }
@@ -43,7 +44,6 @@ public class BuildAssist implements ModInitializer {
                         return ActionResult.PASS;
                 }
 
-                BlockPos clickedPos = hitResult.getBlockPos();
                 BlockState originalState = world.getBlockState(clickedPos);
                 UUID playerId = player.getUuid();
                 RegistryKey<World> dimension = world.getRegistryKey();
@@ -57,15 +57,16 @@ public class BuildAssist implements ModInitializer {
                 }
 
                 BlockPos startPos = startPoint.position;
-                long xCount = Math.abs(clickedPos.getX() - startPos.getX()) + 1L;
-                long yCount = Math.abs(clickedPos.getY() - startPos.getY()) + 1L;
-                long zCount = Math.abs(clickedPos.getZ() - startPos.getZ()) + 1L;
+                BlockPos adjustedPos = new BlockPos(clickedPos.getX(), startPos.getY(), clickedPos.getZ());
+                long xCount = Math.abs(adjustedPos.getX() - startPos.getX()) + 1L;
+                long yCount = Math.abs(adjustedPos.getY() - startPos.getY()) + 1L;
+                long zCount = Math.abs(adjustedPos.getZ() - startPos.getZ()) + 1L;
                 long total = xCount * yCount * zCount;
 
                 START_POINTS.remove(playerId);
                 player.sendMessage(Text.translatable("text.buildassist.block_count", total), true);
                 revertBlockIfTilled(world, clickedPos, originalState);
-                return ActionResult.PASS;
+                return ActionResult.SUCCESS;
         }
 
         private record StartPoint(BlockPos position, RegistryKey<World> dimension) {
